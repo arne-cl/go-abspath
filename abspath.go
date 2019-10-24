@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -49,20 +50,38 @@ func printAbspathsRecursively(path string) {
 	}
 }
 
+func printUsage() {
+	fmt.Printf("Usage of %s:\n\n", os.Args[0])
+
+	fmt.Printf("\tabspath file1.txt path/to/file2.pdf\n")
+	fmt.Printf("\tabspath Desktop/*\n")
+	fmt.Printf("\tabspath -r Desktop\n")
+	fmt.Printf("\tfind . -name *.pdf | abspath\n\n")
+
+	flag.PrintDefaults()
+}
+
 func main() {
-	if len(os.Args) == 1 {
+	flag.Usage = printUsage
+
+	var recursive bool
+	flag.BoolVar(&recursive, "r", false,
+		"recursive: print absolute paths of all files in the directory structure")
+	flag.Parse()
+
+	paths := flag.Args()
+	if len(paths) == 0 { // no paths given as command-line arguments
 		printPathsFromStdin()
+		os.Exit(0)
 	}
 
-	if len(os.Args) >= 2 {
-		if os.Args[1] == "-r" {
-			for _, path := range os.Args[2:] {
-				printAbspathsRecursively(path)
-			}
-		} else {
-			for _, path := range os.Args[1:] {
-				printAbspath(path)
-			}
+	if recursive {
+		for _, path := range paths {
+			printAbspathsRecursively(path)
+		}
+	} else {
+		for _, path := range paths {
+			printAbspath(path)
 		}
 	}
 }
