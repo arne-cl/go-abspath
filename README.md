@@ -1,5 +1,5 @@
-goabspath
-=========
+go-abspath
+==========
 
 `go-abspath` is a command line tool that prints the absolute paths of all
 given files. File names can be piped via `STDIN` or given as arguments.
